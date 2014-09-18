@@ -1,0 +1,200 @@
+Go Try It!
+10 Reasons To Use Go in 10 Minutes
+Tags: go, lightning
+
+Aidan Coyle
+MH Codebase Team
+packrat386@gmail.com
+https://github.com/packrat386/go-lightning-talk
+@packrat386
+
+* #1: Go is Explicit
+
+State your thoughts clearly and catch errors early
+
+
+- No automagic conversions
+  if (some_arg) {
+  	// in C++ this could be anything
+  }   
+- Type Safety
+  if ("" == 0) {
+  	// evaluates to true in your favorite scripting language
+  }
+- No unused variables, arguments, or imports
+  err = someFaultyFunction();
+  return 0;
+  // seems like perhaps we're forgetting something
+
+* #2: Multiple Returns
+
+Once you have it, you'll never want to go back
+
+- No more strange return types
+  pair<vector<double>::const_iterator, vector<double>::const_iterator> best = make_pair(left, right);
+  return best;
+  // Straight out of 281
+
+- Design programs to return error information
+  func errorProneStringGenerator() (string, error) {
+       /* Some code that can break */
+       return myString, err;
+  } 
+
+  // in main
+  str, err = errorProneStringGenerator();
+  if err != nil {
+       /* Handle it */
+  }
+
+* #3: Defer, Panic, Recover
+
+Effective error handling
+
+- Never forget to clean up
+  src, err := os.Open(srcName)
+  if err != nil {
+        return
+  }
+  defer src.Close() // No chance of forgetting to do this
+
+- Recover from serious errors
+  func PanicsALot() {
+       defer func() { // recover is only useful in a deferred function
+       	     if r := recover(); r != nil {
+             	   fmt.Println("Its ok, we recovered")
+             }
+       }()
+       fmt.Println("I think we're starting to panic!");
+       panic("uh oh")
+       return; // We never reach this
+  } 
+
+* #4: Concurrency
+
+Writing concurrent code shouldn't be hard
+
+- Goroutines make asynchronous calls easy
+  // Lets say we want to make 8 connections at once
+  for i :0; i < 8; i++ {
+      go makeConn();
+  }
+  // ... Well that was easy
+
+- Channels make it possible to pass information between those processes and sync them if necessary
+  func doAsyncThings() {
+  	   sigChan := make(chan int);
+  	   go someAsyncProcess(sigChan); // Just need to give the process a copy of the channel
+  	   1 -> sigChan; // We can send it whatever data it might need from us
+  	   doSomeStuff();
+  	   <- sigChan; // We can sync our process up with theirs by waiting for a signal
+  	   return;
+  }
+
+* #5: Standard Library
+
+Built in functionality for common uses
+
+- Network package for making requests and/or setting up a server
+- OS package for dealing with file I/O or external calls
+- Encoding package for parsing various different kinds of files
+- Log package for ... loggging
+- And so much more!
+
+* #6: go get
+
+Don't reinvent the wheel
+
+- go get can be called on public repo's of many code sharing platforms, and it imports that code according to path conventions
+  $ go get github.com/packrat386/relay 	   	     /* A real repo! */
+  $ cd $GOPATH/src/github.com/packrat/relay
+  $ ls
+  config.json.example  LICENSE  main.go  main_test.go  Makefile  README.md
+
+- go get can also be used to update/get dependencies
+  $ go get -d -u ./... /* this will get updated versions of all current dependencies */
+
+* #7: gofmt
+
+It slices, it dices, and so much more
+
+- gofmt can be used to standardize formatting across files and authors
+  /* Just one example: Before */
+  type myType struct {
+       number int64   // some number
+       nameThatsLong string // somthing else
+  }
+   /* After */
+  type myType struct {
+       number        int64  // some number
+       nameThatsLong string // somthing else
+  }
+
+- It can also be used to do token based find->replace
+  gofmt -r 'old -> new' -l *.go
+  /* replaces 'old' with 'new' */
+
+* #8: go test
+
+Testing is easy and integrated
+
+- go test's basic functionality is to run all the tests, detected by naming convention
+  $ go test
+  PASS
+  ok  	github.com/packrat386/somerepo	0.185s
+
+- go test has built in options for benchmarking, code coverage, and race detection among other things
+  $ go test -race      	       	   		      /* run tests with race detection */
+  PASS
+  ok  	github.com/packrat386/somerepo	1.676s
+  $ go test -coverprofile=coverage.out		      /* run tests with code coverage */
+  PASS
+  coverage: 65.1% of statements
+  ok  	github.com/packrat386/relay	0.151s
+  $ go tool cover -html=coverage.out		      /* view html representation of code coverage */
+
+* #9: go run
+
+Compilation and execution simplified
+
+- go run attempts to compile and then execute code
+  $ go run main.go 
+  Hello World!
+
+- go run eliminates the need for separate compilation and execution, as well as Makefiles and other build software
+
+* #10: godoc
+
+All the documentation, none of the @ signs
+
+- Comments directly on top of functions and packages define the documentation for them
+  // Utility is a package of useful functions that I need sometimes
+  package Utility
+
+  // HelloWorld is a function that prints hello world
+  func HelloWorld() {
+       fmt.Println("Hello World");
+  } 
+
+  // Redundant is a function that does addition
+  func Redundant(a int,  b int) int {
+       return a + b;
+  }
+
+- The godoc command generates outputs that documentation in many forms, including html
+- godoc can be run as a local server, documenting all the go code it can find
+
+* But wait there's more!
+
+All the features, none of the (hardware) cost
+
+.image chartvs.png
+.caption Pictured here, Go trouncing Python in benchmark tests
+
+Although it doesn't always feel like it, Go is a compiled language, which for our purposes means it's fast
+
+* Want to learn more?
+
+- Talk to me at hack night
+- Go to http://golang.org/
+- Y'all know how to use google

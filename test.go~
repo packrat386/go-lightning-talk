@@ -1,0 +1,10 @@
+package fake;
+
+myType struct {
+	number int64, // some number
+	float float64, // somthing else
+};
+
+func main() int {
+	return 0;
+}
