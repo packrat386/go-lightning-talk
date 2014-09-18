@@ -15,16 +15,16 @@ State your thoughts clearly and catch errors early
 
 - No automagic conversions
   if (some_arg) {
-  	// in C++ this could be anything
+  	/* in C++ this could be anything */
   }   
 - Type Safety
   if ("" == 0) {
-  	// evaluates to true in your favorite scripting language
+  	/* evaluates to true in your favorite scripting language */
   }
 - No unused variables, arguments, or imports
   err = someFaultyFunction();
   return 0;
-  // seems like perhaps we're forgetting something
+  /* seems like perhaps we're forgetting something */
 
 * #2: Multiple Returns
 
@@ -33,7 +33,7 @@ Once you have it, you'll never want to go back
 - No more strange return types
   pair<vector<double>::const_iterator, vector<double>::const_iterator> best = make_pair(left, right);
   return best;
-  // Straight out of 281
+  /* Straight out of 281 */
 
 - Design programs to return error information
   func errorProneStringGenerator() (string, error) {
@@ -56,18 +56,18 @@ Effective error handling
   if err != nil {
         return
   }
-  defer src.Close() // No chance of forgetting to do this
+  defer src.Close() /* No chance of forgetting to do this */
 
 - Recover from serious errors
   func PanicsALot() {
-       defer func() { // recover is only useful in a deferred function
+       defer func() { /* recover is only useful in a deferred function */
        	     if r := recover(); r != nil {
              	   fmt.Println("Its ok, we recovered")
              }
        }()
        fmt.Println("I think we're starting to panic!");
        panic("uh oh")
-       return; // We never reach this
+       return; /* We never reach this */
   } 
 
 * #4: Concurrency
@@ -75,19 +75,19 @@ Effective error handling
 Writing concurrent code shouldn't be hard
 
 - Goroutines make asynchronous calls easy
-  // Lets say we want to make 8 connections at once
-  for i :0; i < 8; i++ {
+  /* Lets say we want to make 8 connections at once */
+  for i := 0; i < 8; i++ {
       go makeConn();
   }
-  // ... Well that was easy
+  /* ... Well that was easy */
 
 - Channels make it possible to pass information between those processes and sync them if necessary
   func doAsyncThings() {
   	   sigChan := make(chan int);
-  	   go someAsyncProcess(sigChan); // Just need to give the process a copy of the channel
-  	   1 -> sigChan; // We can send it whatever data it might need from us
+  	   go someAsyncProcess(sigChan); /* Just need to give the process a copy of the channel */
+  	   1 -> sigChan; /* We can send it whatever data it might need from us */
   	   doSomeStuff();
-  	   <- sigChan; // We can sync our process up with theirs by waiting for a signal
+  	   <- sigChan; /* We can sync our process up with theirs by waiting for a signal */ 
   	   return;
   }
 
