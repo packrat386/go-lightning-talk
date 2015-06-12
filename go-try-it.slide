@@ -1,10 +1,10 @@
 Go Try It!
-10 Reasons To Use Go in 10 Minutes
+10 Reasons To Try Go in 10 Minutes
 Tags: go, lightning
 
 Aidan Coyle
-MH Codebase Team
-packrat386@gmail.com
+Software Engineering Intern
+acoyle@enova.com
 https://github.com/packrat386/go-lightning-talk
 @packrat386
 
@@ -12,63 +12,56 @@ https://github.com/packrat386/go-lightning-talk
 
 State your thoughts clearly and catch errors early
 
-
-- No automagic conversions
-  if (some_arg) {
-  	/* in C++ this could be anything */
-  }   
-- Type Safety
-  if ("" == 0) {
-  	/* evaluates to true in your favorite scripting language */
-  }
 - No unused variables, arguments, or imports
-  err = someFaultyFunction();
-  return 0;
+  val, err := someFaultyFunction();
+  return val;
   /* seems like perhaps we're forgetting something */
 
-* #2: Multiple Returns
+- No function overloading or optional parameters
+  def calc_score(name, team=nil, *games, field)
+    # This is straight out of Well Groomed Rubyist
+    # Don't ask me how to call it
+  end
 
-Once you have it, you'll never want to go back
+- No magic is good magic
 
-- No more strange return types
-  pair<vector<double>::const_iterator, vector<double>::const_iterator> best = make_pair(left, right);
-  return best;
-  /* Straight out of 281 */
+* #2: Strong Static Typing
 
-- Design programs to return error information
-  func errorProneStringGenerator() (string, error) {
-       /* Some code that can break */
-       return myString, err;
-  } 
+Don't accept what you don't expect
 
-  // in main
-  str, err = errorProneStringGenerator();
-  if err != nil {
-       /* Handle it */
+- Strict type system
+  func PrintString(s string) {}
+
+  var u url.URL
+  u.Parse("http://localhost:8080/")
+  PrintString(u) /* won't compile */
+  PrintString(string(u)) /* still won't compile */
+  PrintString(u.String()) /* now we know what we're getting */
+
+- Interfaces allow for static duck typing
+  /* ioutil.ReaderWriter */
+  type ReadWriter interface {
+          Read(p []byte) (n int, err error)
+       	  Write(p []byte) (n int, err error)
   }
 
-* #3: Defer, Panic, Recover
+* #3: Trickle up Errors
 
-Effective error handling
+Effective error handling idioms
 
-- Never forget to clean up
-  src, err := os.Open(srcName)
+- Handle the errors we can
+  c, err := ReadConfig("config.json")
   if err != nil {
-        return
+          /* If we couldn't read it, give them the default */
+     	  c = Config{}
   }
-  defer src.Close() /* No chance of forgetting to do this */
 
-- Recover from serious errors
-  func PanicsALot() {
-       defer func() { /* recover is only useful in a deferred function */
-       	     if r := recover(); r != nil {
-             	   fmt.Println("Its ok, we recovered")
-             }
-       }()
-       fmt.Println("I think we're starting to panic!");
-       panic("uh oh")
-       return; /* We never reach this */
-  } 
+- Pass back the errors we can't
+  db, err := MakeDbConnection("localhost:5678")
+  if err != nil {
+     	  /* Maybe our caller knows how to handle this */
+     	  return nil, err
+  }
 
 * #4: Concurrency
 
@@ -77,18 +70,18 @@ Writing concurrent code shouldn't be hard
 - Goroutines make asynchronous calls easy
   /* Lets say we want to make 8 connections at once */
   for i := 0; i < 8; i++ {
-      go makeConn();
+          go makeConn();
   }
   /* ... Well that was easy */
 
 - Channels make it possible to pass information between those processes and sync them if necessary
   func doAsyncThings() {
-  	   sigChan := make(chan int);
-  	   go someAsyncProcess(sigChan); /* Just need to give the process a copy of the channel */
-  	   1 -> sigChan; /* We can send it whatever data it might need from us */
-  	   doSomeStuff();
-  	   <- sigChan; /* We can sync our process up with theirs by waiting for a signal */ 
-  	   return;
+          sigChan := make(chan int);
+  	  go someAsyncProcess(sigChan); /* Just need to give the process a copy of the channel */
+  	  1 -> sigChan; /* We can send it whatever data it might need from us */
+  	  doSomeStuff();
+  	  <- sigChan; /* We can sync our process up with theirs by waiting for a signal */ 
+  	  return;
   }
 
 * #5: Standard Library
@@ -101,7 +94,7 @@ Built in functionality for common uses
 - Log package for ... loggging
 - And so much more!
 
-* #6: go get
+* #6: External Libraries
 
 Don't reinvent the wheel
 
@@ -114,27 +107,24 @@ Don't reinvent the wheel
 - go get can also be used to update/get dependencies
   $ go get -d -u ./... /* this will get updated versions of all current dependencies */
 
-* #7: gofmt
+* #7: Static Code Analysis
 
-It slices, it dices, and so much more
+Find the bugs before users do
 
-- gofmt can be used to standardize formatting across files and authors
-  /* Just one example: Before */
-  type myType struct {
-       number int64   // some number
-       nameThatsLong string // somthing else
-  }
-   /* After */
-  type myType struct {
-       number        int64  // some number
-       nameThatsLong string // somthing else
-  }
+- gofmt standardizes formatting across files and authors
+  # put this in your travis.yml
+  test -z $(gofmt -l .)
+  # never worry about tabs vs spaces again
 
-- It can also be used to do token based find->replace
-  gofmt -r 'old -> new' -l *.go
-  /* replaces 'old' with 'new' */
+- go vet catches possible errors that still compile
+  $ go vet bad.go
+  bad.go:10: unreachable code
+  bad.go:7: self-assignment of mystr to mystr
+  exit status 1
 
-* #8: go test
+- The compiler is an excellent static code analysis tool
+
+* #8: Tests
 
 Testing is easy and integrated
 
@@ -153,17 +143,23 @@ Testing is easy and integrated
   ok  	github.com/packrat386/relay	0.151s
   $ go tool cover -html=coverage.out		      /* view html representation of code coverage */
 
-* #9: go run
+* #9: Ship Easily
 
 Compilation and execution simplified
 
 - go run attempts to compile and then execute code
   $ go run main.go 
   Hello World!
+  # No makefiles, rakefiles or build tools required
 
-- go run eliminates the need for separate compilation and execution, as well as Makefiles and other build software
+- go install compiles an easily exportable binary
+  $ pwd
+  /Users/acoyle/go/src/git.enova.com/go/golios
+  $ go install	
+  $ golios
+  [helios] 2015/06/11 21:39:03 Serving [::]:3000 with pid 1829
 
-* #10: godoc
+* #10: Documentation
 
 All the documentation, none of the @ signs
 
@@ -173,12 +169,12 @@ All the documentation, none of the @ signs
 
   // HelloWorld is a function that prints hello world
   func HelloWorld() {
-       fmt.Println("Hello World");
+          fmt.Println("Hello World");
   } 
 
   // Redundant is a function that does addition
   func Redundant(a int,  b int) int {
-       return a + b;
+          return a + b;
   }
 
 - The godoc command generates outputs that documentation in many forms, including html
@@ -189,12 +185,12 @@ All the documentation, none of the @ signs
 All the features, none of the (hardware) cost
 
 .image chartvs.png
-.caption Pictured here, Go trouncing Python in benchmark tests
+.caption Pictured here, Go trouncing Ruby in benchmark tests
 
 Although it doesn't always feel like it, Go is a compiled language, which for our purposes means it's fast
 
 * Want to learn more?
 
-- Talk to me at hack night
+- Check out the Go channel on HipChat
 - Go to http://golang.org/
 - Y'all know how to use google
