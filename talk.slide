@@ -42,7 +42,7 @@ Don't accept what you don't expect
   /* ioutil.ReaderWriter */
   type ReadWriter interface {
           Read(p []byte) (n int, err error)
-       	  Write(p []byte) (n int, err error)
+          Write(p []byte) (n int, err error)
   }
 
 * #3: Trickle up Errors
@@ -67,7 +67,7 @@ Effective error handling idioms
 
 Writing concurrent code shouldn't be hard
 
-- Goroutines make asynchronous calls easy
+- Goroutines make starting new threads easy
   /* Lets say we want to make 8 connections at once */
   for i := 0; i < 8; i++ {
           go makeConn();
@@ -77,11 +77,11 @@ Writing concurrent code shouldn't be hard
 - Channels make it possible to pass information between those processes and sync them if necessary
   func doAsyncThings() {
           sigChan := make(chan int);
-  	  go someAsyncProcess(sigChan); /* Just need to give the process a copy of the channel */
-  	  1 -> sigChan; /* We can send it whatever data it might need from us */
-  	  doSomeStuff();
-  	  <- sigChan; /* We can sync our process up with theirs by waiting for a signal */ 
-  	  return;
+          go someAsyncProcess(sigChan); /* Just need to give the process a copy of the channel */
+          1 -> sigChan; /* We can send it whatever data it might need from us */
+          doSomeStuff();
+          <- sigChan; /* We can sync our process up with theirs by waiting for a signal */ 
+          return;
   }
 
 * #5: Standard Library
@@ -91,7 +91,7 @@ Built in functionality for common uses
 - Network package for making requests and/or setting up a server
 - OS package for dealing with file I/O or external calls
 - Encoding package for parsing various different kinds of files
-- Log package for ... loggging
+- Log package for ... logging
 - And so much more!
 
 * #6: External Libraries
@@ -99,13 +99,13 @@ Built in functionality for common uses
 Don't reinvent the wheel
 
 - go get can be called on public repo's of many code sharing platforms, and it imports that code according to path conventions
-  $ go get github.com/packrat386/relay 	   	     /* A real repo! */
+  $ go get github.com/packrat386/relay 	   	     # A real repo! 
   $ cd $GOPATH/src/github.com/packrat/relay
   $ ls
   config.json.example  LICENSE  main.go  main_test.go  Makefile  README.md
 
 - go get can also be used to update/get dependencies
-  $ go get -d -u ./... /* this will get updated versions of all current dependencies */
+  $ go get -d -u ./... # this will get updated versions of all current dependencies 
 
 * #7: Static Code Analysis
 
@@ -134,14 +134,14 @@ Testing is easy and integrated
   ok  	github.com/packrat386/somerepo	0.185s
 
 - go test has built in options for benchmarking, code coverage, and race detection among other things
-  $ go test -race      	       	   		      /* run tests with race detection */
+  $ go test -race      	       	                      # run tests with race detection
   PASS
   ok  	github.com/packrat386/somerepo	1.676s
-  $ go test -coverprofile=coverage.out		      /* run tests with code coverage */
+  $ go test -coverprofile=coverage.out                # run tests with code coverage
   PASS
   coverage: 65.1% of statements
   ok  	github.com/packrat386/relay	0.151s
-  $ go tool cover -html=coverage.out		      /* view html representation of code coverage */
+  $ go tool cover -html=coverage.out                  # view html representation of code coverage
 
 * #9: Ship Easily
 
