@@ -177,7 +177,7 @@ All the documentation, none of the @ signs
           return a + b;
   }
 
-- The godoc command generates outputs that documentation in many forms, including html
+- The godoc command generates and outputs that documentation in many forms, including html
 - godoc can be run as a local server, documenting all the go code it can find
 
 * But wait there's more!
